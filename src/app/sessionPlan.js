@@ -1,5 +1,8 @@
 export async function resolveSession({cls}){
-  const base = new URL('../../conf/classes/', document.baseURI);
+  const HREF_BASE = new URL(
+    window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'
+  );
+  const base = new URL('./conf/classes/', HREF_BASE);
   const mani = await (await fetch(new URL('class_manifest.json', base))).json();
   const id = cls || mani.default;
   const f = new URL(id + '.json', base);

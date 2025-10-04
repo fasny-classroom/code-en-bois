@@ -1,5 +1,8 @@
 export async function loadGrammarSet() {
-  const base = new URL('./conf/grammar/', document.baseURI);
+  const HREF_BASE = new URL(
+    window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'
+  );
+  const base = new URL('./conf/grammar/', HREF_BASE);
   const sets = await (await fetch(new URL('sets.json', base))).json();
   const params = new URLSearchParams(location.search);
   const key = params.get('set') || localStorage.getItem('ceb:set') || sets.default || 'basic';

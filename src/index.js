@@ -2,7 +2,6 @@ import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import './ui/layout.css';
 
-import { loadGrammarSet } from './app/loadGrammarSet';
 import { loadLevel } from './app/loadLevel';
 import { resolveSession } from './app/sessionPlan';
 import { loadI18n } from './i18n/load';
@@ -15,10 +14,18 @@ import { World } from './runtime/world';
 import { Renderer2D } from './runtime/renderer/canvas2d';
 import { populateSelect } from './ui/controls';
 
+
+
+// grammar
+
 async function boot(){
 
 // inside boot():
   const { lang, locale, appI18n } = await loadI18n();
+  const HREF_BASE = new URL(
+    window.location.href.endsWith('/') ? window.location.href : window.location.href + '/'
+  );
+  const grammarBase = new URL('conf/grammar/', HREF_BASE);
   document.getElementById('runBtn').textContent   = appI18n.ui?.Run   || 'Run';
   document.getElementById('resetBtn').textContent = appI18n.ui?.Reset || 'Reset';
   Blockly.setLocale(locale); 
@@ -29,12 +36,12 @@ async function boot(){
   const setKey  = params.get('set') || current.set || 'basic';
 
   // Merge grammar according to sets.json
-  const setsUrl = new URL('./conf/grammar/sets.json', document.baseURI);
+  const setsUrl = new URL('sets.json', grammarBase);
   const sets = await (await fetch(setsUrl)).json();
   const chosenSet = setKey;
   history.replaceState(null, '', updateQuery({ class: classId, level: levelId, set: chosenSet }));
 
-  const base = new URL('./conf/grammar/', document.baseURI);
+  const base = new URL('./conf/grammar/', HREF_BASE);
   const files = sets.sets[chosenSet];
   const grammar = { version:'1.0.0', categories: [], blocks: [] };
   for(const f of files){
