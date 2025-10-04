@@ -1,0 +1,53 @@
+{
+  "categories": [
+    {
+      "id": "events",
+      "name": "Events",
+      "colour": 20
+    },
+    {
+      "id": "motion",
+      "name": "Motion",
+      "colour": 230
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "colour": 120
+    },
+    {
+      "id": "text",
+      "name": "Text",
+      "colour": 160
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ceb_start",
+      "category": "events",
+      "hat": "cap",
+      "message0": "start",
+      "shape": "statement",
+      "opcode": "START"
+    },
+    {
+      "type": "add_text",
+      "category": "text",
+      "message0": "say %1",
+      "args0": [
+        {
+          "name": "TEXT",
+          "check": "String",
+          "shadow": {
+            "type": "text",
+            "field": {
+              "TEXT": "hello"
+            }
+          }
+        }
+      ],
+      "shape": "statement",
+      "opcode": "PRINT"
+    }
+  ]
+}

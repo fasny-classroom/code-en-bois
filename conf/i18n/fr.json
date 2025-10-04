@@ -1,0 +1,25 @@
+{
+  "categories": {
+    "events": "Événements",
+    "motion": "Mouvements",
+    "control": "Contrôle",
+    "text": "Texte"
+  },
+  "blocks": {
+    "ceb_start": { "message0": "début" },
+    "ceb_move_forward": { "message0": "avancer de %1 pas" },
+    "ceb_turn": { "message0": "tourner %1 de %2 °", "dir": { "LEFT": "gauche", "RIGHT": "droite" } },
+    "ceb_repeat_times": { "message0": "répéter %1 fois %2 faire %3" },
+    "ceb_wait": { "message0": "attendre %1 secondes" },
+    "ceb_set_speed": { "message0": "régler la vitesse %1", "speed": { "SLOW": "lent", "NORMAL": "normal", "FAST": "rapide" } },
+    "add_text": { "message0": "dire %1" }
+  },
+  "ui": {
+    "Run": "Exécuter",
+    "Reset": "Réinitialiser",
+    "Class": "Classe",
+    "Level": "Niveau",
+    "Set": "Jeu de blocs",
+    "CurrentSet": "Jeu:"
+  }
+}

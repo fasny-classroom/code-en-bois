@@ -1,0 +1,100 @@
+{
+  "blocks": [
+    {
+      "type": "ceb_move_forward",
+      "category": "motion",
+      "message0": "move %1 steps",
+      "args0": [
+        {
+          "name": "STEPS",
+          "check": "Number",
+          "shadow": {
+            "type": "math_number",
+            "field": {
+              "NUM": 3
+            }
+          }
+        }
+      ],
+      "shape": "statement",
+      "opcode": "MOVE"
+    },
+    {
+      "type": "ceb_turn",
+      "category": "motion",
+      "message0": "turn %1 by %2\u00b0",
+      "args0": [
+        {
+          "name": "DIR",
+          "field_dropdown": [
+            [
+              "left",
+              "LEFT"
+            ],
+            [
+              "right",
+              "RIGHT"
+            ]
+          ]
+        },
+        {
+          "name": "ANGLE",
+          "check": "Number",
+          "shadow": {
+            "type": "math_number",
+            "field": {
+              "NUM": 90
+            }
+          }
+        }
+      ],
+      "shape": "statement",
+      "opcode": "TURN"
+    },
+    {
+      "type": "ceb_repeat_times",
+      "category": "control",
+      "message0": "repeat %1 times %2 do %3",
+      "args0": [
+        {
+          "name": "TIMES",
+          "check": "Number",
+          "shadow": {
+            "type": "math_number",
+            "field": {
+              "NUM": 4
+            }
+          }
+        },
+        {
+          "input_dummy": true
+        },
+        {
+          "name": "DO",
+          "input_statement": true
+        }
+      ],
+      "shape": "C",
+      "opcode": "REPEAT"
+    },
+    {
+      "type": "ceb_wait",
+      "category": "control",
+      "message0": "wait %1 seconds",
+      "args0": [
+        {
+          "name": "SECS",
+          "check": "Number",
+          "shadow": {
+            "type": "math_number",
+            "field": {
+              "NUM": 1
+            }
+          }
+        }
+      ],
+      "shape": "statement",
+      "opcode": "WAIT"
+    }
+  ]
+}

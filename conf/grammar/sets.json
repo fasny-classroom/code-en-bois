@@ -1,0 +1,13 @@
+{
+  "default": "basic",
+  "sets": {
+    "basic": [
+      "common.json",
+      "basic.json"
+    ],
+    "advanced": [
+      "common.json",
+      "advanced.json"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+:root {
+  --bg: #0b0f14;
+  --fg: #e7f0f7;
+  --accent: #0f9ba8;
+  --panel: #121923;
+  --muted: #7d7f81;
+}
+html, body { height: 100%; margin: 0; background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto; }
+#topbar { display:flex; gap:.5rem; align-items:center; padding:.5rem .75rem; background:#0e151f; border-bottom:1px solid #1b2533; position:sticky; top:0; z-index:10; }
+#topbar select, #topbar button { background:#0f1622; color:var(--fg); border:1px solid #273244; border-radius:10px; padding:.35rem .6rem; }
+#main { display:flex; height: calc(100vh - 48px); }
+#blocklyDiv { flex: 1 1 auto; height: 100%; }
+#rightPane { width: 420px; background: var(--panel); border-left:1px solid #1b2533; display:flex; flex-direction:column; }
+#world { width: 100%; height: auto; image-rendering: pixelated; border-bottom:1px solid #1b2533; }
+#output { flex:1; margin:0; padding:.75rem; overflow:auto; color:#d8e9f9; }

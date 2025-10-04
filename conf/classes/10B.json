@@ -1,0 +1,13 @@
+{
+  "name": "10B",
+  "defaultSet": "advanced",
+  "defaultTileset": "default",
+  "sessions": [
+    {
+      "from": "2025-10-01",
+      "to": "2025-10-31",
+      "level": "L01_getting_started",
+      "set": "advanced"
+    }
+  ]
+}

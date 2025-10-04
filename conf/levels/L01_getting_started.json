@@ -1,0 +1,31 @@
+{
+  "id": "L01_getting_started",
+  "name": "Getting started",
+  "tileset": "default",
+  "width": 12,
+  "height": 8,
+  "tilemap": [
+    "............",
+    "...#####....",
+    "...#...#....",
+    "...#G..#....",
+    "...#...#....",
+    "...#####....",
+    "............",
+    "............"
+  ],
+  "start": {
+    "x": 2,
+    "y": 6,
+    "heading": "N"
+  },
+  "goals": [
+    {
+      "type": "reach",
+      "x": 4,
+      "y": 3
+    }
+  ],
+  "toolboxSet": "basic",
+  "starterWorkspaceXml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"ceb_start\" x=\"40\" y=\"40\"></block></xml>"
+}

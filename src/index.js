@@ -1,62 +1,111 @@
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
+import * as Blockly from 'blockly/core';
+import 'blockly/blocks';
+import './ui/layout.css';
 
-import * as Blockly from 'blockly';
-import {blocks} from './blocks/text';
-import {forBlock} from './generators/javascript';
-import {javascriptGenerator} from 'blockly/javascript';
-import {save, load} from './serialization';
-import {toolbox} from './toolbox';
-import './index.css';
+import { loadGrammarSet } from './app/loadGrammarSet';
+import { loadLevel } from './app/loadLevel';
+import { resolveSession } from './app/sessionPlan';
+import { loadI18n } from './i18n/load';
+import { state } from './app/state';
+import { blocksFromGrammar } from './blocks/fromGrammar';
+import { toolboxXmlFromGrammar } from './toolbox/fromGrammar';
+import { installJsonGenerator } from './generators/json';
+import { run } from './runtime/opcodes';
+import { World } from './runtime/world';
+import { Renderer2D } from './runtime/renderer/canvas2d';
+import { populateSelect } from './ui/controls';
 
-// Register the blocks and generator with Blockly
-Blockly.common.defineBlocks(blocks);
-Object.assign(javascriptGenerator.forBlock, forBlock);
+async function boot(){
 
-// Set up UI elements and inject Blockly
-const codeDiv = document.getElementById('generatedCode').firstChild;
-const outputDiv = document.getElementById('output');
-const blocklyDiv = document.getElementById('blocklyDiv');
-const ws = Blockly.inject(blocklyDiv, {toolbox});
+// inside boot():
+  const { lang, locale, appI18n } = await loadI18n();
+  document.getElementById('runBtn').textContent   = appI18n.ui?.Run   || 'Run';
+  document.getElementById('resetBtn').textContent = appI18n.ui?.Reset || 'Reset';
+  Blockly.setLocale(locale); 
+  const params = new URLSearchParams(location.search);
+  const cls = params.get('class');
+  const { classId, current } = await resolveSession({ cls });
+  const levelId = params.get('level') || current.level;
+  const setKey  = params.get('set') || current.set || 'basic';
 
-// This function resets the code and output divs, shows the
-// generated code from the workspace, and evals the code.
-// In a real application, you probably shouldn't use `eval`.
-const runCode = () => {
-  const code = javascriptGenerator.workspaceToCode(ws);
-  codeDiv.innerText = code;
+  // Merge grammar according to sets.json
+  const setsUrl = new URL('./conf/grammar/sets.json', document.baseURI);
+  const sets = await (await fetch(setsUrl)).json();
+  const chosenSet = setKey;
+  history.replaceState(null, '', updateQuery({ class: classId, level: levelId, set: chosenSet }));
 
-  outputDiv.innerHTML = '';
-
-  eval(code);
-};
-
-// Load the initial state from storage and run the code.
-load(ws);
-runCode();
-
-// Every time the workspace changes state, save the changes to storage.
-ws.addChangeListener((e) => {
-  // UI events are things like scrolling, zooming, etc.
-  // No need to save after one of these.
-  if (e.isUiEvent) return;
-  save(ws);
-});
-
-// Whenever the workspace changes meaningfully, run the code again.
-ws.addChangeListener((e) => {
-  // Don't run the code when the workspace finishes loading; we're
-  // already running it once when the application starts.
-  // Don't run the code during drags; we might have invalid state.
-  if (
-    e.isUiEvent ||
-    e.type == Blockly.Events.FINISHED_LOADING ||
-    ws.isDragging()
-  ) {
-    return;
+  const base = new URL('./conf/grammar/', document.baseURI);
+  const files = sets.sets[chosenSet];
+  const grammar = { version:'1.0.0', categories: [], blocks: [] };
+  for(const f of files){
+    const g = await (await fetch(new URL(f, base))).json();
+    if (g.categories) grammar.categories.push(...g.categories);
+    if (g.blocks) grammar.blocks.push(...g.blocks);
   }
-  runCode();
-});
+
+  
+  Blockly.common.defineBlocks(blocksFromGrammar(grammar, appI18n));
+  const toolboxXml = Blockly.utils.xml.textToDom(toolboxXmlFromGrammar(grammar, appI18n));
+  const workspace = Blockly.inject('blocklyDiv', { toolbox: toolboxXml, /* ... */ });
+
+  const wsKey = `${classId}:${levelId}`;
+  const saved = state.loadWorkspace(wsKey);
+  if (saved) Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(saved), workspace);
+
+  const Gen = installJsonGenerator(grammar);
+
+  const level = await loadLevel(levelId);
+  const canvas = document.getElementById('world');
+  const world = new World(level);
+  const renderer = new Renderer2D(canvas, {});
+  renderer.drawWorld(world);
+
+  document.getElementById('runBtn').onclick = async () => {
+    const program = JSON.parse(Gen.workspaceToCode(workspace));
+    const out = [];
+    const print = (m)=>out.push(String(m));
+    await run(program, {
+      print,
+      move: (steps)=>{ world.move(Number(steps||0)); },
+      turn: (dir, ang)=>{ world.turn(String(dir||'RIGHT'), Number(ang||90)); },
+      tick: ()=>renderer.drawWorld(world),
+    });
+    document.getElementById('output').textContent = out.join('\n');
+    const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+    state.saveWorkspace(wsKey, xml);
+  };
+
+  document.getElementById('resetBtn').onclick = () => {
+    workspace.clear();
+    Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom("<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"ceb_start\" x=\"40\" y=\"40\"></block></xml>"), workspace);
+    document.getElementById('output').textContent = '';
+    world.x = level.start.x; world.y = level.start.y; world.heading = level.start.heading || 'E';
+    renderer.drawWorld(world);
+  };
+
+  // In boot():
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    langSelect.value = lang;
+    langSelect.onchange = (e) => {
+      const u = new URL(location.href);
+      u.searchParams.set('lang', e.target.value);
+      location.href = u.toString();   // reload with new language
+    };
+  }
+
+  populateSelect(document.getElementById('setSelect'), Object.keys(sets.sets).map(k=>({value:k,label:k})), chosenSet);
+  populateSelect(document.getElementById('levelSelect'), [{value:levelId,label:levelId}], levelId);
+  populateSelect(document.getElementById('classSelect'), [{value:classId,label:classId}], classId);
+  document.getElementById('setSelect').onchange = (e)=>{ location.href = updateQuery({ set: e.target.value }); };
+}
+
+function updateQuery(patch){
+  const u = new URL(location.href);
+  const q = u.searchParams;
+  for (const [k,v] of Object.entries(patch)) q.set(k, v);
+  u.search = q.toString();
+  return u.toString();
+}
+
+boot().catch(e=>{ console.error(e); alert(e.message); });

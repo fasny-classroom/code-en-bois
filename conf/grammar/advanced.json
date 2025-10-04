@@ -1,0 +1,30 @@
+{
+  "blocks": [
+    {
+      "type": "ceb_set_speed",
+      "category": "motion",
+      "message0": "set speed %1",
+      "args0": [
+        {
+          "name": "SPEED",
+          "field_dropdown": [
+            [
+              "slow",
+              "SLOW"
+            ],
+            [
+              "normal",
+              "NORMAL"
+            ],
+            [
+              "fast",
+              "FAST"
+            ]
+          ]
+        }
+      ],
+      "shape": "statement",
+      "opcode": "SPEED"
+    }
+  ]
+}

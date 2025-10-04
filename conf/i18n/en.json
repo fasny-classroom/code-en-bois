@@ -1,0 +1,25 @@
+{
+  "categories": {
+    "events": "Events",
+    "motion": "Motion",
+    "control": "Control",
+    "text": "Text"
+  },
+  "blocks": {
+    "ceb_start": { "message0": "start" },
+    "ceb_move_forward": { "message0": "move %1 steps" },
+    "ceb_turn": { "message0": "turn %1 by %2 °", "dir": { "LEFT": "left", "RIGHT": "right" } },
+    "ceb_repeat_times": { "message0": "repeat %1 times %2 do %3" },
+    "ceb_wait": { "message0": "wait %1 seconds" },
+    "ceb_set_speed": { "message0": "set speed %1", "speed": { "SLOW": "slow", "NORMAL": "normal", "FAST": "fast" } },
+    "add_text": { "message0": "say %1" }
+  },
+  "ui": {
+    "Run": "Run",
+    "Reset": "Reset",
+    "Class": "Class",
+    "Level": "Level",
+    "Set": "Set",
+    "CurrentSet": "Set:"
+  }
+}
